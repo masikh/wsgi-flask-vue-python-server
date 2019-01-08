@@ -29,7 +29,8 @@ a project.
 
 ## Usage
 
-Do what ever you like
+    pip install -r requirements.txt
+    python ./run.py
 
 ## Production ready??
 
