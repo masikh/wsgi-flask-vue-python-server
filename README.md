@@ -71,7 +71,9 @@ or build a Docker container
      ---> 120b56e156f7
     Successfully built 120b56e156f7
     ┌(robert@silverbird)-(jobs:0)-(/Users/.1./wsgi-flask-python-server)-(11 files,104b)
-    └> 559 ● docker run -p 5001:5000 120b56e156f7 bash
+    └> 559 ● docker run -p 5000:5000 120b56e156f7 bash
+
+Now open a webbrowser and go to http://localhost:5000
 
 ## Production ready??
 
