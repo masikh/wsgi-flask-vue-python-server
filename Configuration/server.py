@@ -5,8 +5,8 @@ environment = {'ip': '0.0.0.0',
                'port': 5000}
 
 # Applications user settings
-username = os.environ['USER']
-home_directory = os.path.realpath(os.path.expanduser('~{}'.format(username)))
+username = 'masikh' 
+home_directory = '/home/masikh'
 
 # Applications working directory
 cwd = os.getcwd()

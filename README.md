@@ -32,6 +32,47 @@ a project.
     pip install -r requirements.txt
     python ./run.py
 
+or build a Docker container
+
+    ┌(robert@silverbird)-(jobs:0)-(/Users/.1./wsgi-flask-python-server)-(11 files,104b)
+    └> 558 ● docker build .
+    Sending build context to Docker daemon  540.2kB
+    Step 1/10 : FROM ubuntu:17.10
+     ---> e211a66937c6
+    Step 2/10 : RUN mkdir /flask_app
+     ---> Using cache
+     ---> c25172fab5d3
+    Step 3/10 : RUN apt-get update  && apt-get -y install python python-pip
+     ---> Using cache
+     ---> 618e9009f7a0
+    Step 4/10 : COPY requirements.txt /requirements.txt
+     ---> Using cache
+     ---> 716b54db5221
+    Step 5/10 : RUN pip install -r /requirements.txt
+     ---> Using cache
+     ---> 48c0e1d90b2e
+    Step 6/10 : COPY . /flask_app/
+     ---> cad06dbf7de8
+    Step 7/10 : RUN chmod +x /flask_app/run.py
+     ---> Running in 1835befbed56
+    Removing intermediate container 1835befbed56
+     ---> 15e2979466e6
+    Step 8/10 : WORKDIR /flask_app
+     ---> Running in ae550f1ee75d
+    Removing intermediate container ae550f1ee75d
+     ---> e77f52d932e0
+    Step 9/10 : ENTRYPOINT /flask_app/run.py
+     ---> Running in 9b5aaf0b1eed
+    Removing intermediate container 9b5aaf0b1eed
+     ---> 2e4b0d0dd610
+    Step 10/10 : EXPOSE 5000
+     ---> Running in b78b0fa59058
+    Removing intermediate container b78b0fa59058
+     ---> 120b56e156f7
+    Successfully built 120b56e156f7
+    ┌(robert@silverbird)-(jobs:0)-(/Users/.1./wsgi-flask-python-server)-(11 files,104b)
+    └> 559 ● docker run -p 5001:5000 120b56e156f7 bash
+
 ## Production ready??
 
 ehh...seriously, what are you doing here???

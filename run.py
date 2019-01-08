@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import time
 import Configuration
 import WSGIServer
