@@ -26,8 +26,10 @@ def api_sse():
                 yield data
                 gevent.sleep(0.1)
             except GeneratorExit:
-                sse_emit = False
                 yield 'data: END-OF-STREAM\n\n'
+                raise GeneratorExit
+            finally:
+                sse_emit = False
 
     try:
         return Response(inner(), mimetype='text/event-stream')
