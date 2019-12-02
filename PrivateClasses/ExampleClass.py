@@ -1,5 +1,5 @@
 class ExampleClass:
-    def __init__(self, hostname, homedir, username, debug=False):
+    def __init__(self, hostname='Localhost', homedir=None, username=None, debug=False):
         self.hostname = hostname
         self.homedir = homedir
         self.username = username
