@@ -1,3 +1,6 @@
-gevent
+flasgger
 flask
+flask_cors
+gevent
+pyyaml
 wsgiserver
