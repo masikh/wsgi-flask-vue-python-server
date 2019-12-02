@@ -76,7 +76,6 @@ or build a Docker container
 
 Now open a webbrowser and go to http://localhost:5000
 
-## Copyright???
+## Do you like it? 
 
-None, have fun!
 It's nice to mention my name, or send me an email :)
