@@ -1,6 +1,9 @@
 flasgger
 flask
-flask_cors
-gevent
 pyyaml
 wsgiserver
+bcrypt
+pymongo
+pybase64
+requests
+pycrypto

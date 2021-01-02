@@ -1,81 +1,135 @@
-# Python Flask WSGI skeleton
+## Documentation
+This template server is based on Python (3.x), Flask, WSGI, Vue and MongoDB.
 
-This example shows how to create a WSGI Flask server with APIDOCS (swagger) and routes splitted into separate files. In this example I made
-the routes into separate files to show case how that can be done. Also I included some example class file to show how
-to make use of it into your routes, get app data into blueprint routes and so on...
+This example shows how to create a WSGI Flask server with APIDOCS (swagger) and routes splitted into separate files. In this example I made the routes into separate files to show case how that can be done. Also I included some example class file to show how to make use of it into your routes, get app data into blueprint routes and so on...
 
-## Features:
+#### Features:
 
 - API Docs
 - Dockerbuild
-- threaded flask application so the main program can do something else
-- Show case of multiple route directives (API/web/etc..)
+- Vue
+- Flask
+- WSGI
+- MongoDB
+- Bootstrap
+- Single page web-application
+- Threaded application, main program can do something else...
 - Show case of class files imported into routes
 - Show case of configuration parameters shared across the program
-- Show case of templates
-- Show case of static files
-- Show case of SSE (server side events)
-- Show case of single page web application
-- Show case of howto get app parameters in blueprint routes available
-- Show case of flask template rendering
-- Show case of base template
-- Show case of javascript and flask
 - Show case of tidy project structure
-- Bootstrap
 
-## Why???
+#### Why???
 
 Most examples are either highly detailed on a certain aspect of Flask/WSGI or to simple. It serves as a jumpstart into
 a project. 
 
-## Usage
+#### Database setup
+This template server will use a  mongodb with authentication enabled. Open a mongo shell to your database server and execute the 
+following statements. Replace the username and password with your appropriate settings, also reflect the settings in
+the file Configuration/server.py. It uses the default database: 'wsgi_flask_vue_template'
 
-    pip install -r requirements.txt
-    python ./run.py
+```
+use admin
+db.createUser({user: 'admin', pwd: 'secret', roles: [{role: 'root', db: 'admin'}]})
+```
 
-or build a Docker container
+Now change the mongodb.conf to enable authentication. This is a minimal sample configuration 
 
-    ┌(robert@silverbird)-(jobs:0)-(/Users/.1./wsgi-flask-python-server)-(11 files,104b)
-    └> 558 ● docker build .
-    Sending build context to Docker daemon  540.2kB
-    Step 1/10 : FROM ubuntu:17.10
-     ---> e211a66937c6
-    Step 2/10 : RUN mkdir /flask_app
-     ---> Using cache
-     ---> c25172fab5d3
-    Step 3/10 : RUN apt-get update  && apt-get -y install python python-pip
-     ---> Using cache
-     ---> 618e9009f7a0
-    Step 4/10 : COPY requirements.txt /requirements.txt
-     ---> Using cache
-     ---> 716b54db5221
-    Step 5/10 : RUN pip install -r /requirements.txt
-     ---> Using cache
-     ---> 48c0e1d90b2e
-    Step 6/10 : COPY . /flask_app/
-     ---> cad06dbf7de8
-    Step 7/10 : RUN chmod +x /flask_app/run.py
-     ---> Running in 1835befbed56
-    Removing intermediate container 1835befbed56
-     ---> 15e2979466e6
-    Step 8/10 : WORKDIR /flask_app
-     ---> Running in ae550f1ee75d
-    Removing intermediate container ae550f1ee75d
-     ---> e77f52d932e0
-    Step 9/10 : ENTRYPOINT /flask_app/run.py
-     ---> Running in 9b5aaf0b1eed
-    Removing intermediate container 9b5aaf0b1eed
-     ---> 2e4b0d0dd610
-    Step 10/10 : EXPOSE 5000
-     ---> Running in b78b0fa59058
-    Removing intermediate container b78b0fa59058
-     ---> 120b56e156f7
-    Successfully built 120b56e156f7
-    ┌(robert@silverbird)-(jobs:0)-(/Users/.1./wsgi-flask-python-server)-(11 files,104b)
-    └> 559 ● docker run -p 5000:5000 120b56e156f7 bash
+```
+dbpath=/var/lib/mongodb
+logpath=/var/log/mongodb/mongodb.log
+logappend=true
+bind_ip = 127.0.0.1
+journal=true
+auth = true
+```
 
-Now open a webbrowser and go to http://localhost:5000
+### Install python requirements
+```
+sudo python3 -m pip install -r requirements.txt
+```
 
-## Do you like it? 
 
-It's nice to mention my name, or send me an email :)
+### Compile VUE
+change directory to 'vue_web_code' and run:
+```
+npm install
+npm run build
+npm run build_dev (*)
+```
+\* used for during development
+
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize Vue configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
+#### Default user
+At first startup a default login user will be created
+```
+username: admin
+password: admin
+```
+
+#### Docker build and execution
+
+```
+┌(masikh@garthim.masikh.org)-(jobs:0)-(/Users/.3./flask_wsgi_vue)-(11 files,48b)
+└> 560 ● docker build .
+Sending build context to Docker daemon    163MB
+Step 1/12 : FROM ubuntu:20.04
+ ---> d70eaf7277ea
+Step 2/12 : RUN mkdir /flask_app
+ ---> Using cache
+ ---> 10531c67484b
+Step 3/12 : COPY requirements.txt /requirements.txt
+ ---> Using cache
+ ---> b25383677884
+Step 4/12 : ENV TZ=Europa/Amsterdam
+ ---> Using cache
+ ---> e38cbb328799
+Step 5/12 : RUN DEBIAN_FRONTEND="noninteractive"  && apt-get update  && apt-get -y install --no-install-recommends tzdata python3 python3-pip python3-crypto npm  && pip3 install -r /requirements.txt
+ ---> Using cache
+ ---> d83d6c9d6809
+Step 6/12 : COPY . /flask_app/
+ ---> Using cache
+ ---> 33e629d3d176
+Step 7/12 : RUN chmod +x /flask_app/init.sh
+ ---> Using cache
+ ---> 2b5bd3379089
+Step 8/12 : RUN cd /flask_app/vue_web_code  && npm install  && npm run build
+ ---> Using cache
+ ---> 96cd78df5769
+Step 9/12 : RUN chmod +x /flask_app/run.py
+ ---> Using cache
+ ---> 037549ec96a0
+Step 10/12 : WORKDIR /flask_app
+ ---> Using cache
+ ---> 44cc7e0a3b2b
+Step 11/12 : ENTRYPOINT /flask_app/init.sh
+ ---> Using cache
+ ---> b7d0dc18851b
+Step 12/12 : EXPOSE 8888
+ ---> Using cache
+ ---> 25843143d6f5
+Successfully built 25843143d6f5
+
+┌(masikh@garthim.masikh.org)-(jobs:0)-(/Users/.3./flask_wsgi_vue)-(11 files,48b)
+└> 561 ● docker run -p 8888:8888 -e DB=darkcrystal.masikh.org 25843143d6f5 bash
+
+Initializing environment
+
+---------------------------------
+HOSTNAME=9509c5f261ee
+DB=darkcrystal.masikh.org
+
+---------------------------------
+Initializing environment done
+
+---------------------------------
+Starting: Server
+```

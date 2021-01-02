@@ -1,20 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import time
 import Configuration
 import WSGIServer
+import os
 
 
 if __name__ == "__main__":
-    app = WSGIServer.APIServer(Configuration.environment['ip'],
-                               Configuration.environment['port'],
+    debug = os.getenv('debug', True)
+    app = WSGIServer.APIServer(Configuration.environment['flask']['ip_address'],
+                               Configuration.environment['flask']['port'],
                                Configuration.cwd,
-                               Configuration.home_directory,
-                               Configuration.username,
-                               debug=False)
+                               debug=debug)
 
     try:
         while True:
-            # Do anything you like here outside of the flask application...
+            # Flask runs in its own thread, so do anything you like here outside of the flask application...
             time.sleep(1)
     except KeyboardInterrupt:
         app.stop()

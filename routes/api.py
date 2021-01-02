@@ -1,73 +1,108 @@
+from flask import jsonify, request, session, make_response
+from PrivateClasses.Token import Token
+from PrivateClasses.AESCipher import AESCipher
+from PrivateClasses.Database import Database
+from PrivateClasses.Users import Users
+from Decorators.Authorization import authorize
 from . import routes
-from flask import jsonify, Response, request
-from flask_cors import CORS, cross_origin
-from PrivateClasses import ExampleClass
-import Configuration
-import time
-import gevent
+
+""" Get token for accessing any API
+"""
 
 
-@routes.route('/api/user/info', methods=['GET'])
-@cross_origin(origin='*', headers=['Access-Control-Allow-Origin', '*'])
-def api_user_info():
+@routes.route('/api/login', methods=['POST'])
+def api_login():
     """
-    summary: Get User info
-    ---
-    tags:
-      - Users
-
-    get:
-      parameters:
-        - in: query
-          name: hostname
-          required: False
-          schema:
-            type: string
-            example: 5db8afcda51de479cf481396
-          description: Get user information
-
-    responses:
-      200:
-        description: status message with list of dicts
-        content:
-          application/json:
-            schema:
-              type: object
-
+        ---
+        tags:
+           - Authentication
+        post:
+          summary: request token
+          description: This server
+          consumes:
+            - application/json
+          produces:
+            - application/json
+          parameters:
+            - name: body
+              in: body
+              required: true
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: test
+                  password:
+                    type: string
+                    example: test
+        responses:
+          200:
+            description: application token
+            content:
+              application/json:
+                schema:
+                  type: object
     """
-    hostname = 'github.com'
+    def error_response(error):
+        payload = {'token': '', 'error': error}
+        response = make_response(jsonify(payload))
+        response.headers["Content-Type"] = "application/json"
+        return response
+
+    if request.method == 'POST':
+        try:
+            data = request.json
+            username = data['username']
+            password = data['password']
+
+            database = Database()
+            with database:
+                stored_user = database.users({'username': username})
+                if stored_user is None:
+                    return error_response('Incorrect username/password')
+
+                users = Users()
+                checks_out = users.check(stored_user, password)
+                if not checks_out:
+                    return error_response('Incorrect username/password')
+
+            tokens = Token(username)
+            token = tokens.generate_auth_token()
+            # Token can sometimes be a bytes object, convert to str
+            if not isinstance(token, str):
+                token = token.decode('utf-8')
+            session['token'] = token
+            session['username'] = username
+            return jsonify({'token': token})
+        except Exception as error:
+            return error_response(error)
+
+
+@routes.route('/api/logout', methods=['GET'])
+def api_logout():
     try:
-        hostname = request.query_string('hostname')
-        print(hostname)
-    except:
-        pass
-    print(hostname)
-    example_class = ExampleClass(hostname,
-                                 Configuration.global_parameters['home_dir'],
-                                 Configuration.global_parameters['username'])
-    value = example_class.example()
-    return jsonify(value)
+        session.pop('token')
+        session.pop('username')
+        return jsonify({'status': True, 'mesage': 'Session popped'})
+    except KeyError:
+        print('Logout: {"error": "No token in session"}')
+    return jsonify({'status': False, 'message': 'Failed popping session'})
 
 
-@routes.route('/api/sse')
-@cross_origin(origin='*', headers=['Access-Control-Allow-Origin', '*'])
-def api_sse():
-    def inner():
-        sse_emit = True
-        while sse_emit:
-            try:
-                status = str(time.time())
-                data = 'data: {text}\n\n'.format(text=status)
-                yield data
-                gevent.sleep(0.1)
-            except GeneratorExit:
-                yield 'data: END-OF-STREAM\n\n'
-                raise GeneratorExit
-            finally:
-                sse_emit = False
+@authorize
+@routes.route('/api/cipher', methods=['POST'])
+def api_cipher():
+    data = request.json
+    aes = AESCipher(data=data['text'], password=data['password'])
+    cipher_text = aes.encrypt_and_compress()
+    return cipher_text
 
-    try:
-        return Response(inner(), mimetype='text/event-stream')
-    except Exception as error:
-        print('Caught error in /sse-emitter: {error}'.format(error=error))
-        return Response('data: END-OF-STREAM\n\n', mimetype='text/event-stream')
+
+@authorize
+@routes.route('/api/decipher', methods=['POST'])
+def api_decipher():
+    data = request.json
+    aes = AESCipher(data=data['text'], password=data['password'])
+    decipher_text = aes.uncompress_and_decrypt()
+    return decipher_text

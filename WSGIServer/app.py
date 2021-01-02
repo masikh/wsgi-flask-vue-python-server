@@ -2,37 +2,47 @@ import threading
 import time
 import yaml
 import Configuration
+from Configuration.server import environment
+from PrivateClasses.Database import Database
 from flask import Flask
 from routes import *
 from wsgiserver import WSGIServer
 from flasgger import Swagger
 
 template = {
-  "swagger": "2.0",
-  "info": {
-    "title": "Example WSI-Flask-server",
-    "description": "API Example WSI-Flask-server",
-    "contact": {
-      "responsibleOrganization": "Your Organization",
-      "responsibleDeveloper": "Robert Nagtegaal",
-      "email": "masikh@gmail.com",
-      "url": "http://github.com/masikh",
+    "swagger": "2.0",
+    "info": {
+        "title": "FLASK WSGI VUE TEMPLATE SERVER",
+        "description": "Template server",
+        "contact": {
+            "responsibleOrganization": "masikh.org",
+            "responsibleDeveloper": "Robert Nagtegaal",
+            "email": "info@masikh.org",
+            "url": "https://github.com/masikh",
+        },
+        "version": "version-3.0"
     },
-    "version": "version-0.1"
-  },
-  "host": "{HOSTIP}:5000".format(HOSTIP=Configuration.environment['ip']),
-  "basePath": "",
-  "schemes": [
-    "http"
-  ],
-  "security": [
-    {
-        "APIKeyAuth": []
-    }
-  ],
-  "static_url_path": "/flasgger",
-  "description": "Example WSI-Flask-server, powered by WSGI-Flask",
-  "operationId": "getmyData"
+    "host": "{HOSTIP}:8888".format(HOSTIP=Configuration.environment['flask']['ip_address']),
+    "basePath": "",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "securityDefinitions": {
+        "APIKeyAuth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization"
+        }
+    },
+    "security": [
+        {
+            "APIKeyAuth": []
+        }
+    ],
+    "static_url_path": "/flasgger",
+    "description": "FLASK WSGI TEMPLATE (vue app)",
+    "operationId": "getmyData"
 }
 
 
@@ -42,7 +52,7 @@ class ConfigClass(object):
     JSON_SORT_KEYS = True
     JSONIFY_PRETTYPRINT_REGULAR = True
     TEMPLATES_AUTO_RELOAD = True
-    SECRET_KEY = 'gGhHjJkK687809132465{timestamp}'.format(timestamp=time.time())
+    SECRET_KEY = 'QwErTy0192837465-{timestamp}'.format(timestamp=time.time())
     SWAGGER = {
         'title': 'Example WSI-Flask-server',
         'uiversion': 3
@@ -50,18 +60,21 @@ class ConfigClass(object):
 
 
 class APIServer:
-    def __init__(self, ip, port, cwd, home_dir, username, debug=False):
+    def __init__(self, ip, port, cwd, debug=False):
         self.ip = ip
         self.port = port
         self.cwd = cwd
-        self.home_dir = home_dir
-        self.username = username
         self.debug = debug
         Configuration.global_parameters = self.__dict__
         self.app = Flask('WSGI-Flask Server on port: {port}'.format(port=self.port),
-                         template_folder='{}/templates'.format(self.cwd),
-                         static_folder='{}/static'.format(self.cwd))
+                         template_folder='{}/vue_web_code/dist'.format(self.cwd),
+                         static_folder='{}/vue_web_code/dist'.format(self.cwd))
         self.http_server = None
+
+        # Setup database and trigger Database.__enter__()
+        self.database = Database()
+        with self.database:
+            pass
 
         # Start the API documentation services
         try:
@@ -69,9 +82,6 @@ class APIServer:
         except Exception as error:
             print(error)
         Swagger(self.app, template=template)
-
-        # Allow cors for /api and /apidocs
-        CORS(self.app, resources={r"/api/*": {"origins": "*"}, r"/apidocs/*": {"origins": "*"}})
 
         threading.Thread(target=self.run).start()
 
@@ -84,8 +94,7 @@ class APIServer:
         self.app.debug = True
         self.app.register_blueprint(routes)
 
-
-        self.http_server = WSGIServer(self.app, host=self.ip, port=self.port)
+        self.http_server = WSGIServer(self.app, host='0.0.0.0', port=self.port)
         self.http_server.start()
 
     def stop(self):
