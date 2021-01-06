@@ -1,6 +1,6 @@
 import Configuration
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
-from PrivateClasses.Database import Database
+from PrivateClasses.UserManagement import UserManagement
 
 
 class Token:
@@ -10,11 +10,7 @@ class Token:
     def generate_auth_token(self, expiration=600):
         s = Serializer(Configuration.global_parameters['app'].config['SECRET_KEY'], expires_in=expiration)
         token = s.dumps({'id': self.username})
-        database = Database()
-        with database:
-            user = database.users({'username': self.username})
-            user['token'] = token
-            database.users(user, add=True)
+        UserManagement().set_token(session_user=self.username, token=token)
         return token
 
     @staticmethod
@@ -22,14 +18,7 @@ class Token:
         s = Serializer(Configuration.global_parameters['app'].config['SECRET_KEY'])
         try:
             data = s.loads(token)
-            database = Database()
-            with database:
-                result = database.users({'username': data['id']})
-            username = result['username']
-            return username
-        except SignatureExpired:
-            return None    # valid token, but expired
-        except BadSignature:
-            return None    # invalid token
-        except Exception as error:
-            return None
+            result = UserManagement().list_user(data['id'])
+            return result['message']['username']
+        except (SignatureExpired, BadSignature, Exception):
+            return None  # valid token (but expired), invalid token or generic exception

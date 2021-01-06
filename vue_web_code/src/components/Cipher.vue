@@ -1,13 +1,18 @@
 <template>
-  <div>
+  <div class="outer-section">
     <section>
+      <h1>Cipher or Decipher your text</h1>
       <b-field
         label="Passphrase"
         label-position="on-border">
         <b-input
           v-model="password"
+          password-reveal
+          required
+          placeholder="Your encryption key"
           maxlength="40"
-          type="input"/>
+          icon-pack="fas"
+          type="password"/>
       </b-field>
 
       <b-field
@@ -15,23 +20,24 @@
         label-position="on-border">
         <b-input
           v-model="text"
+          placeholder="Your (secret) text"
           maxlength="4000"
           type="textarea"/>
       </b-field>
-
-      <hr>
 
       <div class="cipher-decipher">
         <div>
           <b-button
             native-type="submit"
-            type="is-primary"
+            type="is-danger"
             @click="Cipher">
             Cipher
           </b-button>
         </div>
         <div>
           <b-button
+            native-type="submit"
+            type="is-success"
             @click="Decipher">
             Decipher
           </b-button>
@@ -87,7 +93,12 @@ export default {
 
 <style>
 section {
-  margin-top: 25px;
+  margin: 25px;
+}
+
+.outer-section {
+  margin: 125px;
+  background: rgba(255,255,255,0.7);
 }
 
 .cipher-decipher {

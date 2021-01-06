@@ -22,6 +22,23 @@
       <b-navbar-dropdown
         :label="$store.state.username"
         right>
+        <b-navbar-item
+          v-if="$store.state.isAdmin"
+          tag="router-link"
+          to="/accounts">
+          Account Manager
+        </b-navbar-item>
+        <b-navbar-item
+          v-if="$store.state.isAdmin"
+          tag="router-link"
+          to="/new_account">
+          New account
+        </b-navbar-item>
+        <b-navbar-item
+          tag="router-link"
+          to="/password">
+          Change Password
+        </b-navbar-item>
         <b-navbar-item @click.native="logout">
           Logout
         </b-navbar-item>
