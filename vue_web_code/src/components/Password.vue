@@ -97,11 +97,7 @@ export default {
 
       this.$http.post('user/password', data)
         .then(response => {
-          this.message = 'Password changed'
-          this.success = true
-          this.oldPassword = ''
-          this.newPassword = ''
-          this.newPasswordVerify = ''
+          this.$router.push('/')
         })
         .catch(error => {
           this.message = error.data.message || JSON.stringify(error)

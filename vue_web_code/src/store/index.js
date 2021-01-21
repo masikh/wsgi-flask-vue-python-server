@@ -27,6 +27,7 @@ const store = new Vuex.Store({
       localStorage.setItem('token', state.token)
       localStorage.setItem('username', state.username)
       localStorage.setItem('is_admin', state.isAdmin)
+      console.log('payload:', payload)
     },
     logout (state) {
       state.isLoggedIn = false

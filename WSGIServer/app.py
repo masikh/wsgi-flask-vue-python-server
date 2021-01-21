@@ -1,10 +1,7 @@
 import threading
 import time
 import yaml
-import Configuration
-from Configuration.server import environment
-from PrivateClasses.Database import Database
-from flask import Flask
+from flask import Flask, session
 from routes import *
 from wsgiserver import WSGIServer
 from flasgger import Swagger
@@ -91,6 +88,11 @@ class APIServer:
         self.app.config['JSON_SORT_KEYS'] = True
         self.app.config['TEMPLATES_AUTO_RELOAD'] = True
         self.app.config['SECRET_KEY'] = str(time.time())
+
+        self.app.config['DEBUG'] = True
+        self.app.config['SESSION_COOKIE_HTTPONLY'] = True
+        self.app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+        self.app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
         self.app.debug = True
         self.app.register_blueprint(routes)
 

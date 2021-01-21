@@ -20,9 +20,8 @@ new Vue({
   beforeCreate () {
     this.$http.defaults.baseURL = '/api'
     this.$store.commit('initialiseStore')
-    if (this.$store.state.isLoggedIn) {
-      this.$http.defaults.headers.common['Authorization'] = this.$store.state.token
-    } else if (this.$router.currentRoute.path !== '/login') {
+    this.$http.defaults.headers.common['Authorization'] = this.$store.state.token
+    if (this.$router.currentRoute.path !== '/login') {
       this.$router.push('/login')
     }
   },

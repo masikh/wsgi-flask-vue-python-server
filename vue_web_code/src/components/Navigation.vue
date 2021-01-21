@@ -18,6 +18,14 @@
         Cipher
       </b-navbar-item>
     </template>
+    <template slot="start">
+      <b-navbar-item
+        class="is-active"
+        tag="router-link"
+        to="/CharacterWidgets">
+        Grid
+      </b-navbar-item>
+    </template>
     <template slot="end">
       <b-navbar-dropdown
         :label="$store.state.username"

@@ -151,3 +151,30 @@ class Database:
                                                          {'_id': False,
                                                           'token': False,
                                                           'password_hash': False}))}
+
+    """ Widget APIs
+    """
+
+    def get_widgets(self, username):
+        widgets = self.database.widgets.find_one({'username': username}, {'_id': False, 'username': False})
+        if widgets is None:
+            widgets = {"layout": [
+                {
+                    "id": "settings",
+                    "hidden": False,
+                    "pinned": False,
+                    "position": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 4,
+                        "h": 3
+                    }
+                }
+            ]}
+
+        return {'status': True, 'message': widgets['layout']}
+
+    def set_widgets(self, username, data):
+        payload = {'username': username, 'layout': data}
+        self.database.widgets.update({'username': username}, {'$set': payload}, upsert=True)
+        return {'status': True, 'message': 'widgets updated'}

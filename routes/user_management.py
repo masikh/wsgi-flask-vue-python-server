@@ -129,11 +129,13 @@ def api_users_password():
                   type: object
     """
     data = request.json
+    min_length = 5
     new_password = data['new_password']
     new_password_verify = data['new_password_verify']
 
-    if len(new_password) < 8:
-        return jsonify({'status': False, 'message': 'new password must be at least 8 characters long'}), 400
+    if len(new_password) < min_length:
+        return jsonify({'status': False,
+                        'message': 'new password must be at least {min_length} characters long'.format(min_length=min_length)}), 400
 
     if new_password != new_password_verify:
         return jsonify({'status': False, 'message': 'passwords don\'t match'}), 400

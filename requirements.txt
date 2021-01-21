@@ -1,5 +1,6 @@
 flasgger
 flask
+flask_login
 pyyaml
 wsgiserver
 bcrypt

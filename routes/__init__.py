@@ -5,3 +5,4 @@ from .authenticate import *
 from .index import *
 from .api import *
 from .user_management import *
+from .api_widgets_position import *

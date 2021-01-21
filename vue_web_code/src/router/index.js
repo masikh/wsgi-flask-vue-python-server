@@ -6,6 +6,7 @@ import Password from '@/components/Password'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Cipher from '@/components/Cipher'
+import CharacterWidgets from '@/components/CharacterWidgets'
 
 Vue.use(VueRouter)
 
@@ -15,7 +16,8 @@ const routes = [
   { path: '/accounts', component: Accounts },
   { path: '/new_account', component: AccountCreate },
   { path: '/password', component: Password },
-  { path: '/Cipher', component: Cipher }
+  { path: '/Cipher', component: Cipher },
+  { path: '/CharacterWidgets', component: CharacterWidgets }
 ]
 
 const router = new VueRouter({

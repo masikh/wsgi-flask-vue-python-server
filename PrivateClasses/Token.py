@@ -7,7 +7,7 @@ class Token:
     def __init__(self, username=None):
         self.username = username
 
-    def generate_auth_token(self, expiration=600):
+    def generate_auth_token(self, expiration=1200):
         s = Serializer(Configuration.global_parameters['app'].config['SECRET_KEY'], expires_in=expiration)
         token = s.dumps({'id': self.username})
         UserManagement().set_token(session_user=self.username, token=token)
