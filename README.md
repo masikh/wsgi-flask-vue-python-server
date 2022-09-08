@@ -1,7 +1,9 @@
 ## Documentation
 This template server is based on Python (3.x), Flask, WSGI, Vue and MongoDB.
 
-This example shows how to create a WSGI Flask server with APIDOCS (swagger) and routes splitted into separate files. In this example I made the routes into separate files to show case how that can be done. Also I included some example class file to show how to make use of it into your routes, get app data into blueprint routes and so on...
+This example shows how to create a WSGI Flask server with APIDOCS (swagger) and routes split into separate files. 
+In this example I made the routes into separate files to showcase how that can be done. Also, I included some example
+class file to show how to make use of it into your routes, get app data into blueprint routes and so on...
 
 #### Features:
 
